@@ -1,7 +1,7 @@
-from turtle import Turtle, Screen
+import turtle
 
-tim = Turtle()
-screen = Screen()
+tim = turtle.Turtle()
+screen = turtle.Screen()
 
 def move_forwards():
     tim.forward(10)
