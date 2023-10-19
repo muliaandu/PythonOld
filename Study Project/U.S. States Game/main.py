@@ -14,10 +14,11 @@ guessed = []
 while len(guessed) < 50:
     answer = screen.textinput(title = f"{len(guessed)}/50 States.", prompt = "What's another state's name??").capitalize()
     if answer == "Exit":
-        states_left = []
-        for state in all_states:
-            if state not in guessed:
-                states_left.append(state)
+        states_left = [state for state in all_states if state not in guessed]
+        # states_left = []
+        # for state in all_states:
+        #     if state not in guessed:
+        #         states_left.append(state)
         new_file = pd.DataFrame(states_left)
         new_file.to_csv("D:\\Python\\Study Project\\U.S. States Game\\states_to_learn.csv")
         break
