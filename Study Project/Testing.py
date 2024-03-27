@@ -1,2 +1,4 @@
-with open("High_Score.txt", mode = "r") as file:
-    print(int(file.read()))
+def add(*args):
+    print(args)
+
+add(3, 5, 6)
