@@ -39,7 +39,6 @@ text_result = Label(text = km, font = ("Arial", 20, "bold"))
 text_result.grid(column = 2, row = 2)
 text_result.config(padx = 5, pady = 5)
 
-
 # Button Calculate
 button = Button(text = "Calculate", font = ("Arial", 10, "bold"), foreground = "Blue", command = button_calculate)
 button.grid(column = 2, row = 3)
