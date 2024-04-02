@@ -1,7 +1,5 @@
 from tkinter import *
 
-# Mile to Kilometers Converter
-
 # Calculate The Result
 def button_calculate():
     miles = input.get()
