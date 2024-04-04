@@ -51,9 +51,11 @@ canvas.grid(column = 1, row = 0)
 text_website = Label(text = f"Website :")
 text_website.grid(column = 0, row = 1)
 
-input_website = Entry(width = 53)
+input_website = Entry(width = 33)
 input_website.grid(column = 1, row = 1, columnspan = 2)
 input_website.focus()
+
+search_button = Button(text = f"Search", width = 16, highlightthickness = 0)
 
 text_username = Label(text = f"Email / Username :")
 text_username.grid(column = 0, row = 2)
