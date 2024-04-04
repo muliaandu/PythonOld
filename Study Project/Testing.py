@@ -1,4 +1,4 @@
-def add(*args):
-    print(args)
-
-add(3, 5, 6)
+try :
+    file = open("testing file.text")
+except :
+    print("FUCKED")
