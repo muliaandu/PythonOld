@@ -32,7 +32,7 @@ def save():
     else:
         is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered: \nEmail: {email} "f"\nPassword: {password} \nIs it ok to save?")
         if is_ok:
-            with open(r"C:\Users\ASUS\Documents\ANDU\Python\Study Project\Password Manager\data.txt", "a") as data_file:
+            with open("C:\\Users\\ASUS\\Documents\\ANDU\\Python\\Study Project\\Password Manager\\data.txt", "a") as data_file:
                 data_file.write(f"{website} | {email} | {password}\n")
                 input_website.delete(0, END)
                 input_username.delete(0, END)
@@ -44,7 +44,7 @@ window.title("Password Manager")
 window.config(padx = 50, pady = 50)
 
 canvas = Canvas(width = 200, height = 200)
-lock_img = PhotoImage(file = r"C:\Users\ASUS\Documents\ANDU\Python\Study Project\Password Manager\logo.png")
+lock_img = PhotoImage(file = "C:\\Users\\ASUS\\Documents\\ANDU\\Python\\Study Project\\Password Manager\\logo.png")
 canvas.create_image(100, 100, image = lock_img)
 canvas.grid(column = 1, row = 0)
 
