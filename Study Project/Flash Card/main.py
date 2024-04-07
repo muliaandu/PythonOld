@@ -9,6 +9,7 @@ current_card = {}
 
 def next_card():
     global current_card
+    front_card()
     current_card = choice(word_card)
     key = list(current_card.keys())[0]
     canvas.itemconfig(card_title, text = key)
