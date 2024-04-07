@@ -1,79 +1,76 @@
 from tkinter import *
-from tkinter import messagebox
-from random import choice, randint, shuffle
-import pyperclip
+import pandas
+from pandas.errors import *
+import random
 
-# ---------------------------- PASSWORD GENERATOR ------------------------------- #
+BACKGROUND_COLOR = "#B1DDC6"
+current_card = {}
+to_learn = {}
 
-#Password Generator Project
-def generate_password():
-    letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-    numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
-    symbols = ['!', '#', '$', '%', '&', '(', ')', '*', '+']
-
-    password_letters = [choice(letters) for _ in range(randint(8, 10))]
-    password_symbols = [choice(symbols) for _ in range(randint(2, 4))]
-    password_numbers = [choice(numbers) for _ in range(randint(2, 4))]
-
-    password_list = password_letters + password_symbols + password_numbers
-    shuffle(password_list)
-
-    password = "".join(password_list)
-    password_entry.insert(0, password)
-    pyperclip.copy(password)
-
-# ---------------------------- SAVE PASSWORD ------------------------------- #
-def save():
-
-    website = website_entry.get()
-    email = email_entry.get()
-    password = password_entry.get()
-
-    if len(website) == 0 or len(password) == 0:
-        messagebox.showinfo(title="Oops", message="Please make sure you haven't left any fields empty.")
-    else:
-        is_ok = messagebox.askokcancel(title=website, message=f"These are the details entered: \nEmail: {email} "
-                                                      f"\nPassword: {password} \nIs it ok to save?")
-        if is_ok:
-            with open("data.txt", "a") as data_file:
-                data_file.write(f"{website} | {email} | {password}\n")
-                website_entry.delete(0, END)
-                password_entry.delete(0, END)
+try:
+    data = pandas.read_csv("Study Project\\Testing\\data\\words_to_learn.csv")
+except FileNotFoundError:
+    original_data = pandas.read_csv("Study Project\\Testing\\data\\french_words.csv")
+    print(original_data)
+    to_learn = original_data.to_dict(orient="records")
+except EmptyDataError:
+    original_data = pandas.read_csv("Study Project\\Testing\\data\\french_words.csv")
+    print(original_data)
+    to_learn = original_data.to_dict(orient="records") 
+else:
+    to_learn = data.to_dict(orient="records")
 
 
-# ---------------------------- UI SETUP ------------------------------- #
+def next_card():
+    global current_card, flip_timer
+    window.after_cancel(flip_timer)
+    current_card = random.choice(to_learn)
+    canvas.itemconfig(card_title, text="French", fill="black")
+    canvas.itemconfig(card_word, text=current_card["French"], fill="black")
+    canvas.itemconfig(card_background, image=card_front_img)
+    flip_timer = window.after(3000, func=flip_card)
+
+
+def flip_card():
+    canvas.itemconfig(card_title, text="English", fill="white")
+    canvas.itemconfig(card_word, text=current_card["English"], fill="white")
+    canvas.itemconfig(card_background, image=card_back_img)
+
+
+def is_known():
+    to_learn.remove(current_card)
+    print(len(to_learn))
+    data = pandas.DataFrame(to_learn)
+    data.to_csv("Study Project\\Testing\\data\\words_to_learn.csv", index=False)
+    next_card()
+
 
 window = Tk()
-window.title("Password Manager")
-window.config(padx=50, pady=50)
+window.title("Flashy")
+window.config(padx=50, pady=50, bg=BACKGROUND_COLOR)
 
-canvas = Canvas(height=200, width=200)
-logo_img = PhotoImage(file=r"C:\Users\ASUS\Documents\ANDU\Python\Study Project\Testing\logo.png")
-canvas.create_image(100, 100, image=logo_img)
-canvas.grid(row=0, column=1)
+flip_timer = window.after(3000, func=flip_card)
 
-#Labels
-website_label = Label(text="Website:")
-website_label.grid(row=1, column=0)
-email_label = Label(text="Email/Username:")
-email_label.grid(row=2, column=0)
-password_label = Label(text="Password:")
-password_label.grid(row=3, column=0)
+canvas = Canvas(width=800, height=526)
+card_front_img = PhotoImage(file="Study Project\\Testing\\images\\card_front.png")
+card_back_img = PhotoImage(file="Study Project\\Testing\\images\\card_back.png")
+card_background = canvas.create_image(400, 263, image=card_front_img)
+card_title = canvas.create_text(400, 150, text="", font=("Ariel", 40, "italic"))
+card_word = canvas.create_text(400, 263, text="", font=("Ariel", 60, "bold"))
+canvas.config(bg=BACKGROUND_COLOR, highlightthickness=0)
+canvas.grid(row=0, column=0, columnspan=2)
 
-#Entries
-website_entry = Entry(width=35)
-website_entry.grid(row=1, column=1, columnspan=2)
-website_entry.focus()
-email_entry = Entry(width=35)
-email_entry.grid(row=2, column=1, columnspan=2)
-email_entry.insert(0, "angela@gmail.com")
-password_entry = Entry(width=21)
-password_entry.grid(row=3, column=1)
+cross_image = PhotoImage(file="Study Project\\Testing\\images\\wrong.png")
+unknown_button = Button(image=cross_image, highlightthickness=0, command=next_card)
+unknown_button.grid(row=1, column=0)
 
-# Buttons
-generate_password_button = Button(text="Generate Password", command=generate_password)
-generate_password_button.grid(row=3, column=2)
-add_button = Button(text="Add", width=36, command=save)
-add_button.grid(row=4, column=1, columnspan=2)
+check_image = PhotoImage(file="Study Project\\Testing\\images\\right.png")
+known_button = Button(image=check_image, highlightthickness=0, command=is_known)
+known_button.grid(row=1, column=1)
+
+next_card()
 
 window.mainloop()
+
+
+
