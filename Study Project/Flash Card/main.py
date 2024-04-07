@@ -12,8 +12,8 @@ def next_card():
     front_card()
     current_card = choice(word_card)
     key = list(current_card.keys())[0]
-    canvas.itemconfig(card_title, text = key)
-    canvas.itemconfig(card_word, text = current_card["French"])
+    canvas.itemconfig(card_title, text = key, fill = "black")
+    canvas.itemconfig(card_word, text = current_card["French"], fill = "black")
 
 def front_card():
     # Front Card
@@ -24,8 +24,8 @@ def flip_card():
     # Back Card
     canvas.itemconfig(card_image, image = card_back_image)
     key = list(current_card.keys())[1]
-    canvas.itemconfig(card_title, text = key)
-    canvas.itemconfig(card_word, text = current_card["English"])
+    canvas.itemconfig(card_title, text = key, fill = "white")
+    canvas.itemconfig(card_word, text = current_card["English"], fill = "white")
 
 window = Tk()
 window.title("Flash")
