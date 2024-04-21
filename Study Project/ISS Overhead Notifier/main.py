@@ -12,7 +12,6 @@ HOTMAIL = "smtp.live.com"
 YAHOO = "smtp.mail.yahoo.com"
 
 my_email = "robinrobinary@gmail.com"
-password = "TryingCode1234"
 appcode = "rssa rrkx llia djcf"
 yuni_email = "ratriyuniantari@gmail.com"
 testing_email = "robins.andu@gmail.com"

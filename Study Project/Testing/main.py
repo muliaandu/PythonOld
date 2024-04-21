@@ -1,55 +1,84 @@
 import requests
-from datetime import datetime
-import smtplib
-import time
+from twilio.rest import Client
 
-MY_EMAIL = "___YOUR_EMAIL_HERE____"
-MY_PASSWORD = "___YOUR_PASSWORD_HERE___"
-MY_LAT = 51.507351 # Your latitude
-MY_LONG = -0.127758 # Your longitude
+VIRTUAL_TWILIO_NUMBER = "your virtual twilio number"
+VERIFIED_NUMBER = "your own phone number verified with Twilio"
+
+STOCK_NAME = "TSLA"
+COMPANY_NAME = "Tesla Inc"
+
+STOCK_ENDPOINT = "https://www.alphavantage.co/query"
+NEWS_ENDPOINT = "https://newsapi.org/v2/everything"
+
+STOCK_API_KEY = "YOUR OWN API KEY FROM ALPHAVANTAGE"
+NEWS_API_KEY = "YOUR OWN API KEY FROM NEWSAPI"
+TWILIO_SID = "YOUR TWILIO ACCOUNT SID"
+TWILIO_AUTH_TOKEN = "YOUR TWILIO AUTH TOKEN"
+
+## STEP 1: Use https://www.alphavantage.co/documentation/#daily
+# When stock price increase/decreases by 5% between yesterday and the day before yesterday then print("Get News").
+
+#Get yesterday's closing stock price
+stock_params = {
+    "function": "TIME_SERIES_DAILY",
+    "symbol": STOCK_NAME,
+    "apikey": STOCK_API_KEY,
+}
+
+response = requests.get(STOCK_ENDPOINT, params=stock_params)
+data = response.json()["Time Series (Daily)"]
+data_list = [value for (key, value) in data.items()]
+yesterday_data = data_list[0]
+yesterday_closing_price = yesterday_data["4. close"]
+print(yesterday_closing_price)
+
+#Get the day before yesterday's closing stock price
+day_before_yesterday_data = data_list[1]
+day_before_yesterday_closing_price = day_before_yesterday_data["4. close"]
+print(day_before_yesterday_closing_price)
+
+#Find the positive difference between 1 and 2. e.g. 40 - 20 = -20, but the positive difference is 20. Hint: https://www.w3schools.com/python/ref_func_abs.asp
+difference = float(yesterday_closing_price) - float(day_before_yesterday_closing_price)
+up_down = None
+if difference > 0:
+    up_down = "🔺"
+else:
+    up_down = "🔻"
+
+#Work out the percentage difference in price between closing price yesterday and closing price the day before yesterday.
+diff_percent = round((difference / float(yesterday_closing_price)) * 100)
+print(diff_percent)
 
 
-def is_iss_overhead():
-    response = requests.get(url="http://api.open-notify.org/iss-now.json")
-    response.raise_for_status()
-    data = response.json()
+    ## STEP 2: Instead of printing ("Get News"), actually get the first 3 news pieces for the COMPANY_NAME.
 
-    iss_latitude = float(data["iss_position"]["latitude"])
-    iss_longitude = float(data["iss_position"]["longitude"])
-
-    #Your position is within +5 or -5 degrees of the iss position.
-    if MY_LAT-5 <= iss_latitude <= MY_LAT+5 and MY_LONG-5 <= iss_longitude <= MY_LONG+5:
-        return True
-
-
-def is_night():
-    parameters = {
-        "lat": MY_LAT,
-        "lng": MY_LONG,
-        "formatted": 0,
+#Instead of printing ("Get News"), use the News API to get articles related to the COMPANY_NAME.
+#If difference percentage is greater than 5 then print("Get News").
+if abs(diff_percent) > 1:
+    news_params = {
+        "apiKey": NEWS_API_KEY,
+        "qInTitle": COMPANY_NAME,
     }
-    response = requests.get("https://api.sunrise-sunset.org/json", params=parameters)
-    response.raise_for_status()
-    data = response.json()
-    sunrise = int(data["results"]["sunrise"].split("T")[1].split(":")[0])
-    sunset = int(data["results"]["sunset"].split("T")[1].split(":")[0])
 
-    time_now = datetime.now().hour
+    news_response = requests.get(NEWS_ENDPOINT, params=news_params)
+    articles = news_response.json()["articles"]
 
-    if time_now >= sunset or time_now <= sunrise:
-        return True
+    #Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
+    three_articles = articles[:3]
+    print(three_articles)
 
+    ## STEP 3: Use Twilio to send a seperate message with each article's title and description to your phone number.
 
-while True:
-    time.sleep(60)
-    if is_iss_overhead() and is_night():
-        connection = smtplib.SMTP("__YOUR_SMTP_ADDRESS_HERE___")
-        connection.starttls()
-        connection.login(MY_EMAIL, MY_PASSWORD)
-        connection.sendmail(
-            from_addr=MY_EMAIL,
-            to_addrs=MY_EMAIL,
-            msg="Subject:Look Up👆\n\nThe ISS is above you in the sky."
+    #Create a new list of the first 3 article's headline and description using list comprehension.
+    formatted_articles = [f"{STOCK_NAME}: {up_down}{diff_percent}%\nHeadline: {article['title']}. \nBrief: {article['description']}" for article in three_articles]
+    print(formatted_articles)
+    #Send each article as a separate message via Twilio.
+    client = Client(TWILIO_SID, TWILIO_AUTH_TOKEN)
+
+    #TODO 8. - Send each article as a separate message via Twilio.
+    for article in formatted_articles:
+        message = client.messages.create(
+            body=article,
+            from_=VIRTUAL_TWILIO_NUMBER,
+            to=VERIFIED_NUMBER
         )
-
-
