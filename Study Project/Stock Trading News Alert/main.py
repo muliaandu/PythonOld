@@ -74,6 +74,7 @@ if abs(diff_percent) > 1:
 
     news_response = requests.get(NEWS_ENDPOINT, params=news_params)
     articles = news_response.json()["articles"]
+    print(articles)
 
     #Use Python slice operator to create a list that contains the first 3 articles. Hint: https://stackoverflow.com/questions/509211/understanding-slice-notation
     three_articles = articles[:3]
