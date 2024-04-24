@@ -1,0 +1,21 @@
+{
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "NUTRITIONIX_APP_ID": "0da5dd2d",
+                "NUTRITIONIX_APP_KEYS": "0fee5bc76b8a1e41eeff5babb3d3ba35",
+                "SHEETY_GET": "https://api.sheety.co/15be403723887d0f7768f7cccd0f9f1d/workoutsDatabase/workouts",
+                "SHEETY_POST": "https://api.sheety.co/15be403723887d0f7768f7cccd0f9f1d/workoutsDatabase/workouts",
+                "SHEETY_PUT": "https://api.sheety.co/15be403723887d0f7768f7cccd0f9f1d/workoutsDatabase/workouts/[Object ID]",
+                "SHEETY_DELETE": "https://api.sheety.co/15be403723887d0f7768f7cccd0f9f1d/workoutsDatabase/workouts/[Object ID]",
+                "sheety_Authorization": "Basic dGVzdGluZzp0ZXN0aW5nMTIzNA==",
+                "Nutritionix_Endpoint": "https://trackapi.nutritionix.com/v2/natural/exercise",
+            }
+        }
+    ]
+}
